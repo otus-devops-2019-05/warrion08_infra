@@ -8,9 +8,9 @@
 
 Создание ветки репозитория:
 -`$ git clone git@github.com:otus-devops-2019-05/warrion08_infra.git
--$ cd warrion08_infra
--$ git branch play-travis
--$ git checkout play-travis`
+- $ cd warrion08_infra
+- $ git branch play-travis
+- $ git checkout play-travis`
 
 Добавление шаблона PR
 `$ mkdir .github
