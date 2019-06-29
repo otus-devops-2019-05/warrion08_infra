@@ -7,12 +7,11 @@
 ДЗ №1: Локальное окружение инженера. ChatOps и визуализация рабочих процессов. Командная работа с Git. Работа в GitHub.
 
 Создание ветки репозитория:
-`
-- $ git clone git@github.com:otus-devops-2019-05/warrion08_infra.git
+`- $ git clone git@github.com:otus-devops-2019-05/warrion08_infra.git
 - $ cd warrion08_infra
-- $ git branch play-travis
-- $ git checkout play-travis
-`
+`- $ git branch play-travis
+- $ git checkout play-travis`
+
 
 Добавление шаблона PR
 `$ mkdir .github
