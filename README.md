@@ -1,9 +1,9 @@
 # warrion08_infra
 
-# **Оглавление:**
-### ДЗ №1 
+## **Оглавление:**
+### [ДЗ №1](#ДЗ №1)
 
-
+<a name="ДЗ №1"></a>
 #### ДЗ №1: Локальное окружение инженера. ChatOps и визуализация рабочих процессов. Командная работа с Git. Работа в GitHub.
 
 ##### Создание ветки репозитория:
@@ -40,14 +40,16 @@ $ git commit -m "add test.py"
 $ git push
 ```
 ##### Добавление инструкции для сборки:
-Создаем в корне репозитория .yml файл, в котором описываем инструкции для сборки
+Создаем в корне репозитория .yml файл,
 `$ touch .travis.yml`
-dist: trusty
+В котором описываем инструкции для сборки:
+```dist: trusty
 sudo: required
 language: bash
 before_install:
 - curl https://raw.githubusercontent.com/express42/otus-homeworks/2019-05/run.sh |
 bash
+```
 
 ##### Шифрование токена Trevis CI и Slack интеграция
 ```
