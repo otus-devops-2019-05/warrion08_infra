@@ -1,9 +1,10 @@
 # warrion08_infra
 
 ## **Оглавление:**
-- ### Локальное окружение инженера(#ДЗ №1)
+- ### Локальное окружение инженера(#ДЗ №2)
+- ### Знакомство с облачной инфраструктурой и облачными сервисами(#ДЗ №3)
 
-<a name="ДЗ №1"></a>
+<a name="ДЗ №2"></a>
 #### Локальное окружение инженера. ChatOps и визуализация рабочих процессов. Командная работа с Git. Работа в GitHub.
 
 ##### Создание ветки репозитория:
@@ -71,4 +72,103 @@ $ git commit -m "add encrypted .travis.yml file"
 $ git show
 $ git push
 ```
-Нотификация от Trevis приходит, но билд упал. Смотрим лог,проблема в функции test_equal() в test.py. Исправляем и коммитим. Билд успешно собран.
+Оповещение от Trevis приходит, но билд упал. Смотрим лог,проблема в функции test_equal() в test.py. Исправляем и коммитим. Билд успешно собран.
+
+<a name="ДЗ №3"></a>
+#### ДЗ №3: Знакомство с облачной инфраструктурой и облачными сервисами.
+
+##### Адреса для подключения
+```
+bastion_IP = 35.210.13.7
+someinternalhost_IP = 10.132.0.3
+```
+
+##### Инициализация GCP
+```
+Создаем новую учетную запись в Google Cloud Platform.
+Создаем новый проект Infra.
+Генерируем ssh-ключи и публичный ключ добавляем в метеданные проекта (по умолчанию действует на все VM в проекте)
+`$ ssh-keygen -t rsa -f ~/.ssh/appuser -C appuser -P ""`
+```
+
+#### Создание инстанса VM c внешним IP (подключение через bastion host)
+
+###### Создаем VM:
+```
+Name: bastion
+Zone: europe-west1-d
+Machine type: f1-micro (1 vCPU, 0.6 GB memory)
+Boot disk: Ubuntu 16.04
+Hostname: bastion
+External IP: bastion (35.210.13.7)
+```
+
+###### Проверяем подключение
+
+`$ ssh -i ~/.ssh/appuser.pub appuser@35.210.13.7`
+
+##### Создание инстанса VM без внешнего IP
+
+Создаем VM:
+```
+Name: someinternalhost
+Zone: europe-west1-d
+Machine type: f1-micro (1 vCPU, 0.6 GB memory)
+Boot disk: Ubuntu 16.04
+Hostname: someinternalhost
+```
+Для возможности подключения к someinternalhost из внутренней (от bastion), добавляем приватный ключ в агент авторизации на локальной машине
+
+`$ ssh-add ~/.ssh/appuser`
+
+Включаем SSH Agent Forwarding при помощи параметра -A, затем пробуем подключиться к someinternalhost
+```
+$ ssh -i ~/.ssh/appuser -A appuser@35.210.13.7
+$ ssh 10.132.0.3
+```
+
+##### Подключение к someinternalhost с локальной машины одной командой
+
+С добавлением параметра -J (использование jump host)
+
+`$ ssh -i ~/.ssh/appuser.pub -J appuser@35.210.13.7 appuser@10.132.0.3`
+
+С использованием директивы ProxyJump В файле ~/.ssh/config добавляем:
+```
+Host bastion
+  User appuser
+  Hostname 35.210.13.7
+  ForwardAgent yes
+  IdentityFile ~/.ssh/appuser.pub
+
+Host someinternalhost
+  User appuser
+  Hostname 10.132.0.3
+  ProxyJump bastion
+  ```
+Теперь подключение к someinternalhost может выглядеть следующий образом:
+
+`$ ssh someinternalhost`
+
+##### Добавляем алиас, для подключения в одно слово
+
+`$ alias someinternalhost='ssh someinternalhost'`
+
+#### Создание VPN сервера при помощи Pritunl
+```
+В настройках bastion инстанса в разделе Firewalls разрешаетм HTTP, HTTPS трафик. 
+Появились теги http-server, https-server.
+Выполняем команды для установки pritunl.
+Создаем в web-интерфейсе pritunl организацию, пользователя, сервер. Привязываем сервер к организации и запускаем.
+В настройках сети GCP добавляем правило в Firewall
+Name: vpn-15871
+Targets: vpn-15871
+Filters: IP ranges: 0.0.0.0/0
+Protocols / ports: udp:15871
+Добавляем правило vpn-15871 в теги сети bastion сервера
+Скачиваем конфигурационный файл *.ovpn в web интерфейсе Pritunl
+Добавляем конфиг в клиент OpenVPN
+ sudo openvpn --config ~/cloud-bastion.ovpn
+Подключаемся к someinternalhost с локальной машины
+ssh -i ~/.ssh/appuser appuser@10.132.0.3
+```
