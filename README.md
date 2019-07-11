@@ -3,6 +3,7 @@
 ## **Оглавление:**
 - ### Локальное окружение инженера(#ДЗ №2)
 - ### Знакомство с облачной инфраструктурой и облачными сервисами(#ДЗ №3)
+- ### Основные сервисы GCP(#ДЗ №4)
 
 <a name="ДЗ №2"></a>
 #### Локальное окружение инженера. ChatOps и визуализация рабочих процессов. Командная работа с Git. Работа в GitHub.
@@ -171,4 +172,102 @@ Protocols / ports: udp:15871
  sudo openvpn --config ~/cloud-bastion.ovpn
 Подключаемся к someinternalhost с локальной машины
 ssh -i ~/.ssh/appuser appuser@10.132.0.3
+```
+#### Основные сервисы Google Cloud Platform (GCP)(#ДЗ №4)
+
+```
+testapp_IP = 34.77.190.149
+testapp_port = 9292
+```
+
+##### Установили gcloud на локальной машине:
+```
+echo "deb [signed-by=/usr/share/keyrings/cloud.google.gpg] https://packages.cloud.google.com/apt cloud-sdk main" | sudo tee -a /etc/apt/sources.list.d/google-cloud-sdk.list
+apt-get install apt-transport-https ca-certificates
+curl https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo apt-key --keyring /usr/share/keyrings/cloud.google.gpg add -
+sudo apt-get update && sudo apt-get install google-cloud-sdk
+```
+
+##### Создали VM:
+```
+ gcloud compute instances create reddit-app\
+  --boot-disk-size=10GB \
+  --image-family ubuntu-1604-lts \
+  --image-project=ubuntu-os-cloud \
+  --machine-type=g1-small \
+  --tags puma-server \
+  --restart-on-failure
+  
+  ```
+  
+##### Получили:
+```
+reddit-app  europe-west1-d  g1-small  10.132.0.5   34.77.190.149
+
+```
+##### Подключились к VM:
+```
+ssh appuser@34.77.190.149
+```
+
+##### Написали скрипты: 
+
+install_ruby.sh
+```
+#!/bin/bash
+sudo apt update
+sudo apt install -y ruby-full ruby-bundler build-essential
+```
+
+install_mongodb.sh
+```
+#!/bin/bash
+sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv EA312927
+sudo bash -c 'echo "deb http://repo.mongodb.org/apt/ubuntu xenial/mongodb-org/3.2 multiverse" > /etc/apt/sources.list.d/mongodb-org-3.2.list'
+sudo apt update
+sudo apt install -y mongodb-org
+sudo systemctl start mongod
+sudo systemctl enable mongod
+```
+deploy.sh
+```
+#!/bin/bash
+cd ~/home/appuser
+git clone -b monolith https://github.com/express42/reddit.git
+cd reddit && bundle install
+puma -d
+```
+startup_script.sh
+```
+#!/bin/bash
+
+#install mongo
+sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv EA312927
+sudo bash -c 'echo "deb http://repo.mongodb.org/apt/ubuntu xenial/mongodb-org/3.2 multiverse" > /etc/apt/sources.list.d/mongodb-org-3.2.list'
+sudo apt update
+sudo apt install -y mongodb-org && sudo systemctl start mongod && sudo systemctl enable mongod
+
+#install ruby
+sudo apt install -y ruby-full ruby-bundler build-essential
+
+#deploy
+cd ~/
+git clone -b monolith https://github.com/express42/reddit.git
+cd reddit && bundle install && puma -d
+echo 'Script is Finished'
+```
+##### Для решения доп задания был создал инстанс следующей командой:
+```
+gcloud compute instances create reddit-app \
+  --boot-disk-size=10GB \
+  --image-family ubuntu-1604-lts \
+  --image-project=ubuntu-os-cloud \
+  --machine-type=g1-small \
+  --tags puma-server \
+  --restart-on-failure \
+  --metadata-from-file startup-script=startup.sh
+```
+##### Создания правила брандмауэра из консоли gloud:
+```
+gcloud compute firewall-rules create default-puma-server --direction=INGRESS --priority=1000 --network=default --action=ALLOW --rules=tcp:9292 --source-ranges=0.0.0.0/0 --target-tags=puma-server
 ```
