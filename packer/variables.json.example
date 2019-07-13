@@ -1,0 +1,16 @@
+{
+    "machine_type": "g1-small",
+    "preemptible": "false",
+    "project_id": "ID",
+    "image_description": "Description",
+    "disk_type": "pd-standard",
+    "disk_size": "10",
+    "ssh_username": "test",
+    "tags": "",
+    "netwoork": "projects/((network_project_id))/global/networks/((network)).",
+    "subnetwork": "",
+    "zone": "europe-west-b",
+    "source_image_family": "ubuntu-1604-lts"
+}
+
+
