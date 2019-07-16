@@ -323,7 +323,7 @@ gcloud compute instances create reddit-base\
 Проверяем установку командой
 `terraform -v`
 
-Создаем файл main.tf, который и будет главным конфигурационным файлом. В файл .gitignore добавляем все файлы Terraform, которых не должно быть в публичном репозитории
+##### Создаем файл main.tf, который и будет главным конфигурационным файлом. В файл .gitignore добавляем все файлы Terraform, которых не должно быть в публичном репозитории
 ```
 *.tfstate
 *.tfstate.*.backup
@@ -332,7 +332,7 @@ gcloud compute instances create reddit-base\
 .terraform/
 ```
 
-Комманды Terraform:
+##### Комманды Terraform:
 ```
 terraform init - грузим провайдер 
 terraform refresh - просмотр выходных переменных 
@@ -343,7 +343,7 @@ terraform apply - применение изменений
 terraform fmt - форматирование конфигурационных файлов
 terraform show - стейт файл
 ```
-Файлы:
+#####Файлы:
 ```
 Файл outputs.tf задать выходные переменные
 Входные переменные определяются в файле variables.tf
