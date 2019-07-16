@@ -4,10 +4,8 @@
 - ### Локальное окружение инженера(#ДЗ №2)
 - ### Знакомство с облачной инфраструктурой и облачными сервисами(#ДЗ №3)
 - ### Основные сервисы GCP(#ДЗ №4)
-- ### Сборка образов VM при помощи Packer(#ДЗ №5)
-- ### Практика IaC с использованием Terraform(#ДЗ №6)
 
-
+<a name="ДЗ №2"></a>
 #### Локальное окружение инженера. ChatOps и визуализация рабочих процессов. Командная работа с Git. Работа в GitHub.
 
 ##### Создание ветки репозитория:
@@ -77,7 +75,7 @@ $ git push
 ```
 Оповещение от Trevis приходит, но билд упал. Смотрим лог,проблема в функции test_equal() в test.py. Исправляем и коммитим. Билд успешно собран.
 
-
+<a name="ДЗ №3"></a>
 #### ДЗ №3: Знакомство с облачной инфраструктурой и облачными сервисами.
 
 ##### Адреса для подключения
@@ -258,12 +256,6 @@ git clone -b monolith https://github.com/express42/reddit.git
 cd reddit && bundle install && puma -d
 echo 'Script is Finished'
 ```
-##### Сделать скрипты исполняемыми
-```
-git update-index --chmod=+x file.sh
-
-```
-
 ##### Для решения доп задания был создал инстанс следующей командой:
 ```
 gcloud compute instances create reddit-app \
@@ -278,69 +270,4 @@ gcloud compute instances create reddit-app \
 ##### Создания правила брандмауэра из консоли gloud:
 ```
 gcloud compute firewall-rules create default-puma-server --direction=INGRESS --priority=1000 --network=default --action=ALLOW --rules=tcp:9292 --source-ranges=0.0.0.0/0 --target-tags=puma-server
-```
-
-#### Сборка образов VM при помощи Packer(#ДЗ №5)
-> Установливаем packer и ADC по инструкции.
-> Cоздаем новую ветку packer-base. 
-> Создаем директорию packer с файлом ubuntu16.json
-> В файле ubuntu16.json есть переменные которые определенны в variables.json
-
-```
-ssh_username
-project_id
-zone
-source_image_family
-
-```
-Проверка на ошибки созданного файла:
-
-`packer validate ./ubuntu16.json`
-
-Подключаются при сборке командой:
-`packer build -var-file=variables.json ubuntu16.json` 
-На выходе получаем rebbit-base образ c mongo и rubby
-
-
-*
-Создамим сreate-reddit-vm.sh
-Расположен в config-scripts/ С помощью gcloud создаем instance на основе шаблона --image-family reddit-full 
-```
-#!/bin/bash
-
-#create instance
-gcloud compute instances create reddit-base\
-  --boot-disk-size=10GB \
-  --image-family reddit-full \
-  --machine-type=f1-micro \
-  --tags reddit-full \
-  --restart-on-failure \
-  --zone europe-west1-b
-```
-
-#### Практика IaC с использованием Terraform(#ДЗ №6)
-
-Cоздаем новую ветку terraform-1. Создаем директорию terraform, в ней по итогу будет:
-```
-files/
-   deploy.sh
-   puma.service
-main.tf - основной файл конфигурации
-outputs.tf - выходные переменные, если нужны
-terraform.tfvars - указываем входные переменные
-terraform.tfvars.example
-variables.tf - переменные входные
-```
-Скачиваем terraform 0.11.11, исполняемый файл кладем в /usr/local/bin
-
-##### Команды для управление Terraform:
-```
-terraform plan используется для создания плана выполнения
-terraform apply применяется для применения изменений, необходимых для достижения желаемого состояния конфигурации.
-terraform show показывает стейт файл
-terraform refresh обновляет значения переменных
-terraform output посмотреть знаечение выходных переменных
-terraform destroy используется для уничтожения управляемой Terraform инфраструктуры.
-terraform taint вручную помечает управляемый Terraform ресурс как испорченный, вынуждая его уничтожить и воссоздать при следующем применении.
-terraform fmt форматирует конфигурационные файлы
 ```
