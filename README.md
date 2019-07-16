@@ -4,8 +4,9 @@
 - ### Локальное окружение инженера(#ДЗ №2)
 - ### Знакомство с облачной инфраструктурой и облачными сервисами(#ДЗ №3)
 - ### Основные сервисы GCP(#ДЗ №4)
+- ### Сборка образов VM при помощи Packer(#ДЗ №5)
+- ### Практика IaC с использованием Terraform(#ДЗ №6)
 
-<a name="ДЗ №2"></a>
 #### Локальное окружение инженера. ChatOps и визуализация рабочих процессов. Командная работа с Git. Работа в GitHub.
 
 ##### Создание ветки репозитория:
@@ -256,6 +257,12 @@ git clone -b monolith https://github.com/express42/reddit.git
 cd reddit && bundle install && puma -d
 echo 'Script is Finished'
 ```
+##### Сделать скрипты исполняемыми
+```
+git update-index --chmod=+x file.sh
+
+```
+
 ##### Для решения доп задания был создал инстанс следующей командой:
 ```
 gcloud compute instances create reddit-app \
@@ -270,4 +277,75 @@ gcloud compute instances create reddit-app \
 ##### Создания правила брандмауэра из консоли gloud:
 ```
 gcloud compute firewall-rules create default-puma-server --direction=INGRESS --priority=1000 --network=default --action=ALLOW --rules=tcp:9292 --source-ranges=0.0.0.0/0 --target-tags=puma-server
+```
+
+#### Сборка образов VM при помощи Packer(#ДЗ №5)
+> Установливаем packer и ADC по инструкции.
+> Cоздаем новую ветку packer-base. 
+> Создаем директорию packer с файлом ubuntu16.json
+> В файле ubuntu16.json есть переменные которые определенны в variables.json
+
+```
+ssh_username
+project_id
+zone
+source_image_family
+
+```
+Проверка на ошибки созданного файла:
+
+`packer validate ./ubuntu16.json`
+
+Подключаются при сборке командой:
+`packer build -var-file=variables.json ubuntu16.json` 
+На выходе получаем rebbit-base образ c mongo и rubby
+
+
+*
+Создамим сreate-reddit-vm.sh
+Расположен в config-scripts/ С помощью gcloud создаем instance на основе шаблона --image-family reddit-full 
+```
+#!/bin/bash
+
+#create instance
+gcloud compute instances create reddit-base\
+  --boot-disk-size=10GB \
+  --image-family reddit-full \
+  --machine-type=f1-micro \
+  --tags reddit-full \
+  --restart-on-failure \
+  --zone europe-west1-b
+```
+
+#### Практика IaC с использованием Terraform(#ДЗ №6)
+
+##### Устанавливаем Terraform распаковываем и добавляем бинарник в PATH.  
+Проверяем установку командой
+`terraform -v`
+
+Создаем файл main.tf, который и будет главным конфигурационным файлом. В файл .gitignore добавляем все файлы Terraform, которых не должно быть в публичном репозитории
+```
+*.tfstate
+*.tfstate.*.backup
+*.tfstate.backup
+*.tfvars
+.terraform/
+```
+
+Комманды Terraform:
+```
+terraform init - грузим провайдер 
+terraform refresh - просмотр выходных переменных 
+terraform output - просмотр значения выходных переменных
+terraform destroy - удаление созданных ресурсов
+terraform plan - просмотр вносимых изменений
+terraform apply - применение изменений
+terraform fmt - форматирование конфигурационных файлов
+terraform show - стейт файл
+```
+Файлы:
+```
+Файл outputs.tf задать выходные переменные
+Входные переменные определяются в файле variables.tf
+terraform.tfvars - задаем переменные
 ```
