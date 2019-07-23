@@ -6,7 +6,7 @@ variable region {
   description = "Region"
 
   # Значение по умолчанию
-  default = "europe-west1"
+  default = "europe-west1-b"
 }
 
 variable public_key_path {
@@ -27,4 +27,14 @@ variable zone {
 
   #Значение по умолчанию
   default = "europe-west1-b"
+}
+
+variable app_disk_image {
+description = "Disk image for reddit app"
+default = "reddit-base-1562920483"
+}
+
+variable db_disk_image {
+description = "Disk image for reddit db"
+default = "reddit-base-1562920483"
 }
