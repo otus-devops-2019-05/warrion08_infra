@@ -385,3 +385,31 @@ Import successful!
 Также вносим изменения в файл с переменными variables.tf
 Выносим правило firewall в файл vpc.tf
 ```
+##### Модули
+Создаем модули db, app, vpc
+В ~/terraform/main.tf добавляем секции вызова созданных модулей
+`terraform get` - команда для загрузки модулей
+
+#### Переиспользование модулей
+##### Создаем Stage & Prod
+Создаем 2 директории "stage" и "prod" в них копируем файлы main.tf, outputs.tf, terraform.tfvars из ~/terraform в main.tf меняем пути к модулям на ../modules/xxx
+
+#### Реестр модулей
+Реестр модулей для GCP: https://registry.terraform.io/
+Создаем файл ~/terraform/storage-bucket.tf
+```
+provider "google" {
+version = "2.0.0"
+project = "${var.project}"
+region = "${var.region}"
+}
+module "storage-bucket" {
+source = "SweetOps/storage-bucket/google"
+version = "0.1.1"
+# Имена поменяйте на другие
+name = ["storage-bucket-test", "storage-bucket-test2"]
+}
+output storage-bucket_url {
+value = "${module.storage-bucket.url}"
+}
+```
