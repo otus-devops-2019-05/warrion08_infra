@@ -1,3 +1,4 @@
+
 # warrion08_infra
 
 ## **Оглавление:**
@@ -6,6 +7,7 @@
 - ### Основные сервисы GCP(#ДЗ №4)
 - ### Сборка образов VM при помощи Packer(#ДЗ №5)
 - ### Практика IaC с использованием Terraform(#ДЗ №6)
+- ### Принципы организации инфраструктурного кода и работа над инфраструктурой в команде на примере Terraform(#ДЗ №7)
 
 #### Локальное окружение инженера. ChatOps и визуализация рабочих процессов. Командная работа с Git. Работа в GitHub.
 
@@ -343,9 +345,72 @@ terraform apply - применение изменений
 terraform fmt - форматирование конфигурационных файлов
 terraform show - стейт файл
 ```
-#####Файлы:
+##### Файлы:
 ```
 Файл outputs.tf задать выходные переменные
 Входные переменные определяются в файле variables.tf
 terraform.tfvars - задаем переменные
+```
+#### Принципы организации инфраструктурного кода и работа над инфраструктурой в команде на примере Terraform(#ДЗ №7)
+
+##### Правила Firewall
+'$ gcloud compute firewall-rules list' - просмотр правил на GCP
+
+##### Импорт инфраструктуры из GCP в Terraform на примере правила Firewall
+```
+$ terraform import google_compute_firewall.firewall_ssh default-allow-ssh
+google_compute_firewall.firewall_ssh: Importing from ID "default-allow-ssh"...
+google_compute_firewall.firewall_ssh: Import complete!
+Imported google_compute_firewall (ID: default-allow-ssh)
+google_compute_firewall.firewall_ssh: Refreshing state... (ID: default-allowssh)
+Import successful!
+```
+##### Виды зависимостей
+```
+Неявная зависимость
+Ссылку в одном ресурсе на атрибуты другого тераформ
+понимает как зависимость одного ресурса от другого. Это влияет
+на очередность создания и удаления ресурсов при применении
+изменений. Вновь пересоздадим все ресурсы и посмотрим на
+очередность создания ресурсов сейчас 
+
+Явная зависимость
+Задается параметром `depends on`
+
+```
+##### Структуризация ресурсов
+###### Необходимо создать 2 виртуальные машины.
+Разбиваем файл main.tf на несколько конигурационных файлов:
+```
+Создаем файлы конфигурации VM app.tf и db.tf
+Также вносим изменения в файл с переменными variables.tf
+Выносим правило firewall в файл vpc.tf
+```
+##### Модули
+Создаем модули db, app, vpc
+В ~/terraform/main.tf добавляем секции вызова созданных модулей
+`terraform get` - команда для загрузки модулей
+
+#### Переиспользование модулей
+##### Создаем Stage & Prod
+Создаем 2 директории "stage" и "prod" в них копируем файлы main.tf, outputs.tf, terraform.tfvars из ~/terraform в main.tf меняем пути к модулям на ../modules/xxx
+
+#### Реестр модулей
+Реестр модулей для GCP: https://registry.terraform.io/
+Создаем файл ~/terraform/storage-bucket.tf
+```
+provider "google" {
+version = "2.0.0"
+project = "${var.project}"
+region = "${var.region}"
+}
+module "storage-bucket" {
+source = "SweetOps/storage-bucket/google"
+version = "0.1.1"
+# Имена поменяйте на другие
+name = ["storage-bucket-test", "storage-bucket-test2"]
+}
+output storage-bucket_url {
+value = "${module.storage-bucket.url}"
+}
 ```
