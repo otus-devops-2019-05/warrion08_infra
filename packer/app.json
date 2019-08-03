@@ -26,8 +26,8 @@
     ],
 	"provisioners": [
         {
-            "type": "shell",
-            "script": "scripts/install_ruby.sh",
+            "type": "ansible",
+            "script": "ansible/packer_app.yml",
             "execute_command": "sudo {{.Path}}"
         }
     ]
