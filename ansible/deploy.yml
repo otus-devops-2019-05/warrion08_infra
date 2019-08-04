@@ -1,7 +1,6 @@
 ---
 - name: Deploy App
   hosts: app
-#  become: true
   tasks:
     - name : Install Puma
       git:
@@ -18,4 +17,5 @@
   handlers:
     - name: reload puma
       become: true
-      systemd: name=puma state=restarted
+      systemd: name=puma 
+      state: restarted
