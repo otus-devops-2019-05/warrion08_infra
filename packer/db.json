@@ -23,11 +23,10 @@
             "machine_type": "f1-micro"
         }
     ],
-	"provisioners": [
-	{
+	    "provisioners": [
+	    {
             "type": "ansible",
-            "script": "ansible/packer_db.yml",
-            "execute_command": "sudo {{.Path}}"
+            "script": "ansible/packer_db.yml"
         }
     ]
 }
