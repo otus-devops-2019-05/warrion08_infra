@@ -27,7 +27,7 @@
 	    "provisioners": [
         {
             "type": "ansible",
-            "script": "ansible/packer_app.yml"
+            "playbook_file": "ansible/packer_app.yml"
         }
     ]
 }
