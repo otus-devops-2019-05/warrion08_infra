@@ -1,15 +1,15 @@
-
 {
-	"variables": {
-		"project_id": null,
-		"source_image_family": null,
-		"machine_type": null,
-		"disk_size": "10",
-		"disk_type": "pd-standard",
-		"network" : "default",
-		"tags": "" ,
-		"image_description": null,
-		"ssh_username": null
+    "variables": 
+        {
+            "project_id": null,
+            "source_image_family": null,
+            "machine_type": null,
+            "disk_size": "10",
+            "disk_type": "pd-standard",
+            "network" : "default",
+            "tags": "" ,
+            "image_description": null,
+            "ssh_username": null
 	},
 
     "builders": [
