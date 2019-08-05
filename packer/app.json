@@ -1,15 +1,15 @@
-
 {
-	"variables": {
-		"project_id": null,
-		"source_image_family": null,
-		"machine_type": null,
-		"disk_size": "10",
-		"disk_type": "pd-standard",
-		"network" : "default",
-		"tags": "" ,
-		"image_description": null,
-		"ssh_username": null
+    "variables": 
+        {
+            "project_id": null,
+            "source_image_family": null,
+            "machine_type": null,
+            "disk_size": "10",
+            "disk_type": "pd-standard",
+            "network" : "default",
+            "tags": "" ,
+            "image_description": null,
+            "ssh_username": null
 	},
 
     "builders": [
@@ -24,11 +24,10 @@
             "machine_type": "f1-micro"
         }
     ],
-	"provisioners": [
+	    "provisioners": [
         {
-            "type": "shell",
-            "script": "scripts/install_ruby.sh",
-            "execute_command": "sudo {{.Path}}"
+            "type": "ansible",
+            "playbook_file": "ansible/packer_app.yml"
         }
     ]
 }
