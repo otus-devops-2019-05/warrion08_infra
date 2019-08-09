@@ -15,7 +15,6 @@
           chdir: /home/appuser/reddit
 
   handlers:
-    - name: reload puma
-      become: true
-      systemd: name=puma 
-      state: restarted
+  - name: reload puma
+    become: true
+    systemd: name=puma state=restarted
