@@ -16,3 +16,4 @@ vault.key
 main.py
 Pipfile*
 venv/
+.vscode
