@@ -4,7 +4,7 @@
     url: https://www.mongodb.org/static/pgp/server-3.2.asc
 #    id: "EA312927"
 #    keyserver: keyserver.ubuntu.com
-  tags: install
+  tags: mongo_install
 
 - name: Add APT repository
   apt_repository:

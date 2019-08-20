@@ -23,7 +23,7 @@
             "machine_type": "f1-micro"
         }
     ],
-	    "provisioners": [
+    "provisioners": [
 	    {
             "type": "ansible",
             "playbook_file": "ansible/playbooks/packer_db.yml"
