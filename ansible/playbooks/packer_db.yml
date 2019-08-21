@@ -5,24 +5,3 @@
 
   roles:
     -db
-
-#  tasks:
-#    - name: Add key Repo
-#      apt_key:
-#      id: EA312927
-#      keyserver: keyserver.ubuntu.com
-
-#    - name: Add Repo  
-#      apt_repository:
-#        repo: deb [ arch=amd64,arm64 ] http://repo.mongodb.org/apt/ubuntu xenial/mongodb-org/3.2 multiverse
-#        state: present
-
-#    - name: Install MongoDB
-#      apt:
-#        name: mongodb-org
-#        state: present  
-
-#    - name: Enable MongoDB
-#      systemd:
-#        name: mongod
-#        enabled: yes
