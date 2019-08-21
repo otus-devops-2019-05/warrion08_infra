@@ -1,10 +1,10 @@
 ---
 - name: Install Ruby and Bundler
-  hosts: app
+  hosts: all
   become: true
 
-roles:
-  -app
+  roles:
+    -app
 
 #  tasks:
 #  - name: Install ruby and packages
